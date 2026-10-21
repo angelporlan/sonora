@@ -114,7 +114,7 @@ struct MeetingTranscriberApp: App {
     // GitHub-hosted runner. Each declaration below is type-checked on its own
     // budget. Nothing leaves `body`'s evaluation: the properties are read from
     // the same closures at the same moment, so `@Observable` records the same
-    // reads, and the scene order, window ids and modifiers are unchanged.
+    // reads.
     var body: some Scene {
         MenuBarExtra {
             menuBarContent
@@ -122,6 +122,7 @@ struct MeetingTranscriberApp: App {
             menuBarLabel
         }
 
+        homeWindow
         speakerNamingWindow
         settingsWindow
         recordAppWindow
@@ -146,6 +147,7 @@ struct MeetingTranscriberApp: App {
             onOpenLastProtocol: openLastProtocol,
             onOpenProtocol: { url in NSWorkspace.shared.open(url) },
             onOpenProtocolsFolder: openProtocolsFolder,
+            onShowMainWindow: { bringWindowToFront(id: "home") },
             onOpenSettings: {
                 bringWindowToFront(id: "settings")
             },
@@ -250,29 +252,45 @@ struct MeetingTranscriberApp: App {
         .windowResizability(.contentSize)
     }
 
+    private var homeWindow: some Scene {
+        Window("Meeting Transcriber", id: "home") {
+            HomeWindowView(settings: appState.settings, onRevealOutputFolder: { openProtocolsFolder() }) {
+                settingsView()
+            }
+        }
+        .defaultSize(width: 1100, height: 720)
+    }
+
     private var settingsWindow: some Scene {
         Window("Settings", id: "settings") {
-            SettingsView(
-                settings: appState.settings,
-                whisperKitEngine: appState.engines.whisperKit,
-                parakeetEngine: appState.engines.parakeetEngine,
-                updateChecker: appState.updateChecker,
-                notificationVisibility: appState.permissions.notificationVisibility,
-                // Share the pipeline's actor instance so both writers serialise on
-                // the same `recognition_log.jsonl` file. Fallback only fires in the
-                // test-only PipelineQueue init that intentionally leaves it nil.
-                recognitionStatsLog: appState.pipeline.queue.recognitionStatsLog ?? RecognitionStatsLog(),
-                // Same actor instance the pipeline writes to, so both writers
-                // serialise on stage_timing.jsonl. Fallback fires only in the
-                // test-only PipelineQueue init that leaves it nil.
-                stageTimingLog: appState.pipeline.queue.stageTimingLog ?? StageTimingLog(),
-                enrollmentDiarizerFactory: { FluidDiarizer(mode: appState.settings.diarizerMode) },
-                namingDialogActive: appState.pipeline.queue.pendingSpeakerNaming != nil,
-                pipelineBusy: appState.pipeline.queue.isProcessing,
-                onSpeakerMutate: appState.pipeline.queue.refreshKnownSpeakerNames,
-            )
+            settingsView()
         }
         .windowResizability(.contentSize)
+    }
+
+    /// Shared by the main window and the menu-bar Settings window. The menu-bar
+    /// window keeps its own id (`settings`) because the automation harness
+    /// addresses that id; the main window embeds the same controls.
+    private func settingsView() -> SettingsView {
+        SettingsView(
+            settings: appState.settings,
+            whisperKitEngine: appState.engines.whisperKit,
+            parakeetEngine: appState.engines.parakeetEngine,
+            updateChecker: appState.updateChecker,
+            notificationVisibility: appState.permissions.notificationVisibility,
+            // Share the pipeline's actor instance so both writers serialise on
+            // the same `recognition_log.jsonl` file. Fallback only fires in the
+            // test-only PipelineQueue init that intentionally leaves it nil.
+            recognitionStatsLog: appState.pipeline.queue.recognitionStatsLog ?? RecognitionStatsLog(),
+            // Same actor instance the pipeline writes to, so both writers
+            // serialise on stage_timing.jsonl. Fallback fires only in the
+            // test-only PipelineQueue init that leaves it nil.
+            stageTimingLog: appState.pipeline.queue.stageTimingLog ?? StageTimingLog(),
+            enrollmentDiarizerFactory: { FluidDiarizer(mode: appState.settings.diarizerMode) },
+            namingDialogActive: appState.pipeline.queue.pendingSpeakerNaming != nil,
+            pipelineBusy: appState.pipeline.queue.isProcessing,
+            onSpeakerMutate: appState.pipeline.queue.refreshKnownSpeakerNames,
+        )
     }
 
     private var recordAppWindow: some Scene {

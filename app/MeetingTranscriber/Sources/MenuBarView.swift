@@ -21,6 +21,7 @@ struct MenuBarView: View {
     let onOpenLastProtocol: () -> Void
     let onOpenProtocol: (URL) -> Void
     let onOpenProtocolsFolder: () -> Void
+    let onShowMainWindow: () -> Void
     let onOpenSettings: () -> Void
     let onNameSpeakers: (() -> Void)?
     let onProcessFiles: () -> Void
@@ -197,6 +198,13 @@ struct MenuBarView: View {
             .keyboardShortcut("o")
             .disabled(protocolPath.isEmpty)
         }
+
+        Button {
+            onShowMainWindow()
+        } label: {
+            Label("Show Meeting Transcriber", systemImage: "macwindow")
+        }
+        .keyboardShortcut("1")
 
         Button {
             onOpenProtocolsFolder()
