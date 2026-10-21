@@ -34,6 +34,15 @@ class WatchLoop {
         manualRecordingInfo != nil
     }
 
+    /// When the current capture started. Nil unless a recording is in progress
+    /// and the recorder has stamped its own start, which is what the main
+    /// window's timer counts from.
+    var captureStartedAt: Date? {
+        guard state == .recording else { return nil }
+        guard let started = (activeRecorder as? DualSourceRecorder)?.recordingStartDate else { return nil }
+        return started == .distantPast ? nil : started
+    }
+
     // Dependencies
     let detector: any MeetingDetecting
     let recorderFactory: @MainActor () async -> any RecordingProvider

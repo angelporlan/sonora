@@ -127,4 +127,9 @@ enum A11yID {
 
     // Live captions overlay.
     static let liveCaptionBackend = "liveCaptionBackend"
+
+    // Main window record control.
+    static let homeRecordButton = "homeRecordButton"
+    static let homeRecordAppButton = "homeRecordAppButton"
+    static let homeWatchToggle = "homeWatchToggle"
 }

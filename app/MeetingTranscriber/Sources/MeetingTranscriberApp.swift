@@ -261,7 +261,16 @@ struct MeetingTranscriberApp: App {
 
     private var homeWindow: some Scene {
         Window("Meeting Transcriber", id: "home") {
-            HomeWindowView(settings: appState.settings, onRevealOutputFolder: { openProtocolsFolder() }) { tab in
+            HomeWindowView(
+                settings: appState.settings,
+                recording: appState.recordingConsole,
+                recordingStartedAt: appState.recordingStartedAt,
+                onRecord: { appState.watching.startMicrophoneRecording() },
+                onStopManualRecording: { appState.watching.stopManualRecording() },
+                onRecordApp: { bringWindowToFront(id: "record-app") },
+                onToggleWatch: { appState.watching.toggleWatching() },
+                onRevealOutputFolder: { openProtocolsFolder() },
+            ) { tab in
                 settingsView().pane(for: tab)
             }
         }

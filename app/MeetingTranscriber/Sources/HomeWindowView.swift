@@ -20,6 +20,12 @@ enum MainWindowActivation {
 /// harness still addresses it by its own window id.
 struct HomeWindowView<Pane: View>: View {
     @Bindable var settings: AppSettings
+    let recording: RecordingConsole
+    let recordingStartedAt: Date?
+    let onRecord: () -> Void
+    let onStopManualRecording: () -> Void
+    let onRecordApp: () -> Void
+    let onToggleWatch: () -> Void
     let onRevealOutputFolder: () -> Void
     @ViewBuilder let settingsPane: (SettingsTab) -> Pane
 
@@ -34,6 +40,15 @@ struct HomeWindowView<Pane: View>: View {
             detail
         }
         .frame(minWidth: 960, minHeight: 580)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            RecordingConsoleView(
+                recording: recording,
+                startedAt: recordingStartedAt,
+                onPrimary: performRecordingPrimary,
+                onRecordApp: onRecordApp,
+                onToggleWatch: onToggleWatch,
+            )
+        }
         .onAppear {
             MainWindowActivation.show()
             library.start(directory: settings.effectiveOutputDir)
@@ -94,4 +109,15 @@ struct HomeWindowView<Pane: View>: View {
 private enum HomeSection: Hashable {
     case transcripts
     case settings(SettingsTab)
+}
+
+extension HomeWindowView {
+    fileprivate func performRecordingPrimary() {
+        switch recording.primary {
+        case .recordMicrophone: onRecord()
+        case .stopManual: onStopManualRecording()
+        case .stopWatching: onToggleWatch()
+        case nil: break
+        }
+    }
 }
