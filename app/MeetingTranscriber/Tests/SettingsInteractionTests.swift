@@ -98,6 +98,21 @@ final class SettingsInteractionTests: XCTestCase {
         XCTAssertFalse(settings.saveRawTranscriptSeparately)
     }
 
+    func testOpenWindowOnLaunchTogglePersists() throws {
+        let settings = makeSettings()
+        XCTAssertFalse(settings.openWindowOnLaunch)
+        let view = GeneralSettingsView(settings: settings, notificationVisibility: nil)
+
+        let toggle = try view.inspect()
+            .find(viewWithAccessibilityIdentifier: A11yID.openWindowOnLaunchToggle)
+            .find(ViewType.Toggle.self)
+        try toggle.tap()
+
+        XCTAssertTrue(settings.openWindowOnLaunch)
+        let reloaded = AppSettings(defaults: defaults)
+        XCTAssertTrue(reloaded.openWindowOnLaunch)
+    }
+
     // MARK: - Stepper write-back
 
     func testPollIntervalStepperIncrementsSetting() throws {

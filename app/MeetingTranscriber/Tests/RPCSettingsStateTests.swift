@@ -62,6 +62,7 @@
             XCTAssertEqual(s.protocolGeneration.language, "German")
             XCTAssertTrue(s.updates.checkForUpdates)
             XCTAssertFalse(s.updates.includePreReleases)
+            XCTAssertFalse(s.window.openOnLaunch)
         }
 
         // MARK: - Snapshot reflects flipped values (mutation-proof target)
@@ -82,6 +83,7 @@
             settings.diarize = false
             settings.verboseDiagnostics = true
             settings.includePreReleases = true
+            settings.openWindowOnLaunch = true
 
             let s = settings.rpcSettingsSnapshot()
 
@@ -100,6 +102,7 @@
             XCTAssertFalse(s.diarization.diarize)
             XCTAssertTrue(s.diagnostics.verboseDiagnostics)
             XCTAssertTrue(s.updates.includePreReleases)
+            XCTAssertTrue(s.window.openOnLaunch)
         }
 
         // MARK: - Enum raw-value mapping is pinned
@@ -253,6 +256,7 @@
                 "output.includeFullTranscriptInProtocol", "output.saveRawTranscriptSeparately",
                 "diagnostics.verboseDiagnostics", "diagnostics.debugRPCEnabled",
                 "updates.checkForUpdates", "updates.includePreReleases",
+                "window.openOnLaunch",
             ]
             XCTAssertEqual(keys, allowlist)
         }

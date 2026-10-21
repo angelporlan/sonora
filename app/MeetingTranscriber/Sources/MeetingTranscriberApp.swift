@@ -189,6 +189,13 @@ struct MeetingTranscriberApp: App {
         .onReceive(NotificationCenter.default.publisher(for: .closeSettings)) { _ in
             closeWindow(id: "settings")
         }
+        // A launch of this menu-bar app shows no window on its own. The
+        // setting is read once here, when the status item appears, which is
+        // the first moment `openWindow` can reach the home scene.
+        .task {
+            guard appState.settings.openWindowOnLaunch else { return }
+            bringWindowToFront(id: "home")
+        }
         .task {
             await appState.engines.preloadActiveModel()
         }

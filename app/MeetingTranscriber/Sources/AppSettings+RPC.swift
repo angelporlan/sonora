@@ -26,6 +26,7 @@
                 output: rpcOutputSettings(),
                 diagnostics: rpcDiagnosticsSettings(),
                 updates: rpcUpdatesSettings(),
+                window: RPCStateSnapshot.Settings.Window(openOnLaunch: openWindowOnLaunch),
             )
         }
 

@@ -27,6 +27,14 @@ struct GeneralSettingsView: View {
     var body: some View {
         // swiftlint:disable:next closure_body_length
         Form {
+            Section("Window") {
+                Toggle("Open window on launch", isOn: $settings.openWindowOnLaunch)
+                    .accessibilityIdentifier(A11yID.openWindowOnLaunchToggle)
+                Text("Also shows this window when the app opens. Turn it off to keep only the menu bar icon.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Section("Mode") {
                 Toggle("Record-only mode", isOn: $settings.recordOnly)
                     .accessibilityIdentifier(A11yID.recordOnlyToggle)

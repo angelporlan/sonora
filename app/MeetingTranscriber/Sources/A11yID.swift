@@ -19,6 +19,7 @@ import Foundation
 enum A11yID {
     // Settings — section anchors + record-only controls.
     static let recordOnlyToggle = "recordOnlyToggle"
+    static let openWindowOnLaunchToggle = "openWindowOnLaunchToggle"
     static let watchBrowserToggle = "watchBrowserToggle"
     static let browserConsentWarning = "browserConsentWarning"
     static let consentDenyListSection = "consentDenyListSection"

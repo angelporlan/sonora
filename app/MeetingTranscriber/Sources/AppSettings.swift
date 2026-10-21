@@ -178,6 +178,12 @@ final class AppSettings {
         didSet { defaults.set(autoWatch, forKey: "autoWatch") }
     }
 
+    /// Also open the main window when the app launches. Off keeps the menu
+    /// bar icon as the only thing a launch shows.
+    var openWindowOnLaunch: Bool {
+        didSet { defaults.set(openWindowOnLaunch, forKey: "openWindowOnLaunch") }
+    }
+
     // MARK: - Recording
 
     var pollInterval: Double {
@@ -584,6 +590,7 @@ final class AppSettings {
         watchWhatsApp = defaults.object(forKey: "watchWhatsApp") as? Bool ?? false
         watchCustomApps = defaults.stringArray(forKey: "watchCustomApps") ?? []
         autoWatch = defaults.object(forKey: "autoWatch") as? Bool ?? false
+        openWindowOnLaunch = defaults.object(forKey: "openWindowOnLaunch") as? Bool ?? false
 
         pollInterval = defaults.object(forKey: "pollInterval") as? Double ?? 3.0
         endGrace = defaults.object(forKey: "endGrace") as? Double ?? 15.0

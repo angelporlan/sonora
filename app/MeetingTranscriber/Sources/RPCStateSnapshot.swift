@@ -319,6 +319,7 @@
             let output: Output
             let diagnostics: Diagnostics
             let updates: Updates
+            let window: Window
 
             struct Detection: Codable {
                 let watchTeams: Bool
@@ -444,12 +445,19 @@
                 static let empty = Self(checkForUpdates: false, includePreReleases: false)
             }
 
+            struct Window: Codable {
+                /// Launch also opens the main window. False leaves the menu bar icon only.
+                let openOnLaunch: Bool
+
+                static let empty = Self(openOnLaunch: false)
+            }
+
             /// Placeholder for snapshots built without a live `AppSettings`
             /// (test fixtures, `RPCStateSnapshot.empty`).
             static let empty = Self(
                 detection: .empty, recording: .empty, transcription: .empty,
                 diarization: .empty, protocolGeneration: .empty, output: .empty,
-                diagnostics: .empty, updates: .empty,
+                diagnostics: .empty, updates: .empty, window: .empty,
             )
         }
 
