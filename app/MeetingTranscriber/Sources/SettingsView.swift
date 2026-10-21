@@ -41,7 +41,7 @@ struct SettingsView: View {
             }
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 240)
         } detail: {
-            detailView(for: selection)
+            pane(for: selection)
         }
         .navigationTitle("Settings")
         .frame(
@@ -54,8 +54,50 @@ struct SettingsView: View {
         )
     }
 
-    @ViewBuilder
-    private func detailView(for tab: SettingsTab) -> some View {
+    /// One settings page, without the sidebar. The menu-bar Settings window
+    /// wraps this in its own split. The main window lists the same tabs in
+    /// its source list, so it must not embed that split again.
+    func pane(for tab: SettingsTab) -> SettingsPane {
+        SettingsPane(
+            tab: tab,
+            settings: settings,
+            whisperKitEngine: whisperKitEngine,
+            parakeetEngine: parakeetEngine,
+            updateChecker: updateChecker,
+            notificationVisibility: notificationVisibility,
+            recognitionStatsLog: recognitionStatsLog,
+            stageTimingLog: stageTimingLog,
+            enrollmentDiarizerFactory: enrollmentDiarizerFactory,
+            namingDialogActive: namingDialogActive,
+            pipelineBusy: pipelineBusy,
+            onSpeakerMutate: onSpeakerMutate,
+        )
+    }
+}
+
+/// The controls for one settings tab. No sidebar and no width cap: the caller
+/// decides the chrome. A cap here is what left the empty band when this page
+/// was nested inside the main window's own split.
+struct SettingsPane: View {
+    let tab: SettingsTab
+    @Bindable var settings: AppSettings
+    var whisperKitEngine: WhisperKitEngine
+    var parakeetEngine: ParakeetEngine
+    var updateChecker: UpdateChecker?
+    var notificationVisibility: NotificationVisibility?
+    var recognitionStatsLog: RecognitionStatsLog
+    var stageTimingLog: StageTimingLog
+    var enrollmentDiarizerFactory: (() -> any DiarizationProvider)?
+    var namingDialogActive: Bool = false
+    var pipelineBusy: Bool = false
+    var onSpeakerMutate: (() -> Void)?
+
+    var body: some View {
+        page
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    @ViewBuilder private var page: some View {
         switch tab {
         case .general:
             GeneralSettingsView(
@@ -96,7 +138,7 @@ struct SettingsView: View {
     }
 }
 
-private enum SettingsTab: String, CaseIterable, Identifiable {
+enum SettingsTab: String, CaseIterable, Identifiable {
     case general, audio, transcription, speakers, output, advanced, about
 
     var id: String {

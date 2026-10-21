@@ -254,8 +254,8 @@ struct MeetingTranscriberApp: App {
 
     private var homeWindow: some Scene {
         Window("Meeting Transcriber", id: "home") {
-            HomeWindowView(settings: appState.settings, onRevealOutputFolder: { openProtocolsFolder() }) {
-                settingsView()
+            HomeWindowView(settings: appState.settings, onRevealOutputFolder: { openProtocolsFolder() }) { tab in
+                settingsView().pane(for: tab)
             }
         }
         .defaultSize(width: 1100, height: 720)
@@ -268,9 +268,9 @@ struct MeetingTranscriberApp: App {
         .windowResizability(.contentSize)
     }
 
-    /// Shared by the main window and the menu-bar Settings window. The menu-bar
-    /// window keeps its own id (`settings`) because the automation harness
-    /// addresses that id; the main window embeds the same controls.
+    /// The menu-bar Settings window keeps its own id (`settings`) because the
+    /// automation harness addresses that id. The main window shows one tab at
+    /// a time from the same controls, in its own source list.
     private func settingsView() -> SettingsView {
         SettingsView(
             settings: appState.settings,

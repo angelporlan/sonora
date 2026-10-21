@@ -15,13 +15,13 @@ enum MainWindowActivation {
     }
 }
 
-/// Native window: a source list with the meeting library and the existing
-/// settings. The settings window opened from the menu bar stays separate so
-/// the automation harness still addresses it by its own window id.
-struct HomeWindowView<Settings: View>: View {
+/// Native window: one source list for the library and the settings tabs.
+/// The menu-bar Settings window stays a separate scene so the automation
+/// harness still addresses it by its own window id.
+struct HomeWindowView<Pane: View>: View {
     @Bindable var settings: AppSettings
     let onRevealOutputFolder: () -> Void
-    @ViewBuilder let settingsContent: () -> Settings
+    @ViewBuilder let settingsPane: (SettingsTab) -> Pane
 
     @State private var section: HomeSection = .transcripts
     @State private var library = TranscriptLibraryController()
@@ -53,9 +53,11 @@ struct HomeWindowView<Settings: View>: View {
                 Label("Transcripts", systemImage: "doc.text")
                     .tag(HomeSection.transcripts)
             }
-            Section {
-                Label("Settings", systemImage: "gearshape")
-                    .tag(HomeSection.settings)
+            Section("Settings") {
+                ForEach(SettingsTab.allCases) { tab in
+                    Label(tab.label, systemImage: tab.systemImage)
+                        .tag(HomeSection.settings(tab))
+                }
             }
         }
         .listStyle(.sidebar)
@@ -82,13 +84,14 @@ struct HomeWindowView<Settings: View>: View {
                 selectedID: $selectedDocumentID,
                 onRevealFolder: onRevealOutputFolder,
             )
-        case .settings:
-            settingsContent()
+        case .settings(let tab):
+            settingsPane(tab)
+                .navigationTitle(tab.label)
         }
     }
 }
 
 private enum HomeSection: Hashable {
     case transcripts
-    case settings
+    case settings(SettingsTab)
 }
